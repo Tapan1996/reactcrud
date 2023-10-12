@@ -13,3 +13,6 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+Route::resource('products', \App\Http\Controllers\ProductController::class);
+Route::resource('categories', \App\Http\Controllers\CategoryController::class);
