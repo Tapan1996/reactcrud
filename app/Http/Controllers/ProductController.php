@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
+
     /**
      * Display a listing of the products.
      */
@@ -17,16 +17,8 @@ class ProductController extends Controller
         try {
             return response(['success' => true, 'data' => Product::with('category')->get(), 'message' => null]);
         } catch (\Throwable $exception) {
-            return response(['success' => true, 'data' => null, 'message' => $exception]);
+            return response(['success' => false, 'data' => null, 'message' => $exception]);
         }
-    }
-
-    /**
-     * Show the form for creating a new product.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -38,24 +30,14 @@ class ProductController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'price' => 'required|decimal:0,2|max:9999999',
-                'category_id' => 'required|int',
-
-            ]);
-
+                'category_id' => 'required|int']);
             if ($validator->fails()) {
                 return response(['success' => false, 'data' => null, 'message' => $validator->errors()]);
             }
-
-            $product = new Product();
-            $product->name = $request->input('name');
-            $product->price = $request->input('price');
-            $product->category_id = $request->input('category_id');
-            $product->save();
+            $product = Product::create($request->toArray());
             return response(['success' => true, 'data' => $product, 'message' => 'Product created']);
-
         } catch (\Throwable $exception) {
             return response(['success' => false, 'data' => null, 'message' => $exception]);
-
         }
     }
 
@@ -68,17 +50,10 @@ class ProductController extends Controller
             $product = Product::findOrFail($id);
             return response(['success' => true, 'data' => $product, 'message' => null]);
         } catch (\Throwable $exception) {
-            return response(['success' => true, 'data' => null, 'message' => $exception]);
+            return response(['success' => false, 'data' => null, 'message' => $exception]);
         }
     }
 
-    /**
-     * Show the form for editing the specified product.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
 
     /**
      * Update the specified product in db.
@@ -90,19 +65,12 @@ class ProductController extends Controller
                 'name' => 'required|string|max:255',
                 'price' => 'required|decimal:0,2|max:9999999',
                 'category_id' => 'required|int',
-
             ]);
-
             if ($validator->fails()) {
                 return response(['success' => false, 'data' => null, 'message' => $validator->errors()]);
             }
-
-            $product = Product::findOrFail($id);
-            $product->name = $request->input('name');
-            $product->price = $request->input('price');
-            $product->category()->save(Category::findOrFail($request->input('category_id')));
-            $product->save();
-            return response(['success' => true, 'data' => $product, 'message' => 'Product updated']);
+            $product = Product::findOrFail($id)->update($request->toArray());
+            return response(['success' => true, 'data' => Product::findOrFail($id), 'message' => 'Product updated']);
 
         } catch (\Throwable $exception) {
             return response(['success' => false, 'data' => null, 'message' => $exception]);
@@ -120,7 +88,7 @@ class ProductController extends Controller
             $product->delete();
             return response(['success' => true, 'data' => null, 'message' => 'Product deleted']);
         } catch (\Throwable $exception) {
-            return response(['success' => true, 'data' => null, 'message' => $exception]);
+            return response(['success' => false, 'data' => null, 'message' => $exception]);
         }
     }
 }

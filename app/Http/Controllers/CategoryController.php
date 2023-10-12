@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
+
+
+
     /**
      * Display a listing of the categories.
      */
@@ -16,7 +19,7 @@ class CategoryController extends Controller
         try {
             return response(['success' => true, 'data' => Category::all(), 'message' => null]);
         } catch (\Throwable $exception) {
-            return response(['success' => true, 'data' => null, 'message' => $exception]);
+            return response(['success' => false, 'data' => null, 'message' => $exception]);
         }
     }
 
@@ -27,22 +30,14 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:255',
-            ]);
-
+            $validator = Validator::make($request->all(), ['name' => 'required|string|max:255']);
             if ($validator->fails()) {
                 return response(['success' => false, 'data' => null, 'message' => $validator->errors()]);
             }
-
-            $category = new Category();
-            $category->name = $request->input('name');
-            $category->save();
+            $category = Category::create(['name' => $request->input('name')]);
             return response(['success' => true, 'data' => $category, 'message' => 'Category created']);
-
         } catch (\Exception $exception) {
             return response(['success' => false, 'data' => null, 'message' => $exception]);
-
         }
     }
 
@@ -55,16 +50,8 @@ class CategoryController extends Controller
             $category = Category::findOrFail($id);
             return response(['success' => true, 'data' => $category, 'message' => null]);
         } catch (\Throwable $exception) {
-            return response(['success' => true, 'data' => null, 'message' => $exception]);
+            return response(['success' => false, 'data' => null, 'message' => $exception]);
         }
-    }
-
-    /**
-     * Show the form for editing the specified category.
-     */
-    public function edit(string $id, Request $request)
-    {
-        //
     }
 
     /**
@@ -73,22 +60,14 @@ class CategoryController extends Controller
     public function update(Request $request, string $id)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|max:255',
-            ]);
-
+            $validator = Validator::make($request->all(), ['name' => 'required|max:255']);
             if ($validator->fails()) {
                 return response(['success' => false, 'data' => null, 'message' => $validator->errors()]);
             }
-
-            $category = Category::findOrFail($id);
-            $category->name = $request->input('name');
-            $category->save();
-            return response(['success' => true, 'data' => $category, 'message' => 'Category updated']);
-
+            Category::findOrFail($id)->update(['name' => $request->input('name')]);
+            return response(['success' => true, 'data' => Category::findOrFail($id), 'message' => 'Category updated']);
         } catch (\Exception $exception) {
             return response(['success' => false, 'data' => null, 'message' => $exception]);
-
         }
     }
 
@@ -102,7 +81,7 @@ class CategoryController extends Controller
             $category->delete();
             return response(['success' => true, 'data' => null, 'message' => 'Category deleted']);
         } catch (\Throwable $exception) {
-            return response(['success' => true, 'data' => null, 'message' => $exception]);
+            return response(['success' => false, 'data' => null, 'message' => $exception]);
         }
     }
 }
