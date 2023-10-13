@@ -17,7 +17,7 @@ class CategoryController extends Controller
     public function index()
     {
         try {
-            return response(['success' => true, 'data' => Category::all(), 'message' => null]);
+            return response(['success' => true, 'data' => Category::all(), 'message' => 'Categories loaded']);
         } catch (\Throwable $exception) {
             return response(['success' => false, 'data' => null, 'message' => $exception]);
         }
@@ -48,7 +48,7 @@ class CategoryController extends Controller
     {
         try {
             $category = Category::findOrFail($id);
-            return response(['success' => true, 'data' => $category, 'message' => null]);
+            return response(['success' => true, 'data' => $category, 'message' => 'Category loaded']);
         } catch (\Throwable $exception) {
             return response(['success' => false, 'data' => null, 'message' => $exception]);
         }
