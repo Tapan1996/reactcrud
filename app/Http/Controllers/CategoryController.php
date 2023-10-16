@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
-
 
 
     /**
@@ -79,6 +79,8 @@ class CategoryController extends Controller
         try {
             $category = Category::findOrFail($id);
             $category->delete();
+//            Deletes old products
+            Product::where('category_id', $id)->delete();
             return response(['success' => true, 'data' => null, 'message' => 'Category deleted']);
         } catch (\Throwable $exception) {
             return response(['success' => false, 'data' => null, 'message' => $exception]);
